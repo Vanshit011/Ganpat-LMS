@@ -1,0 +1,151 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700;800&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-ganpat-off-white text-gray-800 font-sans;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  /* ── Card ── */
+  .card {
+    @apply bg-white rounded-3xl shadow-premium border border-green-100 p-8 transition-all duration-300 hover:shadow-green-glow hover:-translate-y-1;
+  }
+
+  /* ── Glassmorphism ── */
+  .glass {
+    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-premium;
+  }
+  .glass-dark {
+    @apply bg-ganpat-green/80 backdrop-blur-lg border border-white/10 shadow-premium text-white;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed active:scale-95;
+  }
+  .btn-primary {
+    @apply btn bg-gradient-to-br from-ganpat-green to-ganpat-green-mid text-white shadow-green-glow hover:shadow-lg hover:-translate-y-0.5;
+  }
+  .btn-outline {
+    @apply btn border-2 border-ganpat-green text-ganpat-green hover:bg-ganpat-green hover:text-white shadow-sm hover:shadow-green-glow;
+  }
+  .btn-ghost {
+    @apply btn text-gray-600 hover:bg-green-50 hover:text-ganpat-green;
+  }
+  .btn-danger {
+    @apply btn bg-gradient-to-br from-red-500 to-red-600 text-white shadow-sm hover:shadow-md hover:scale-[1.02];
+  }
+
+  /* ── Form ── */
+  .input {
+    @apply w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl bg-gray-50/50
+           focus:outline-none focus:border-ganpat-green focus:bg-white focus:shadow-sm
+           transition-all duration-300 text-sm;
+  }
+  .label {
+    @apply block text-[11px] font-bold text-gray-400 mb-2 uppercase tracking-[0.1em] px-1;
+  }
+
+  /* ── Badge ── */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-xl text-[11px] font-bold uppercase tracking-wider;
+  }
+  .badge-green {
+    @apply badge bg-green-50 text-ganpat-green border border-green-100;
+  }
+  .badge-blue {
+    @apply badge bg-blue-50 text-blue-600 border border-blue-100;
+  }
+  .badge-orange {
+    @apply badge bg-orange-50 text-orange-600 border border-orange-100;
+  }
+  .badge-red {
+    @apply badge bg-red-50 text-red-600 border border-red-100;
+  }
+  .badge-yellow {
+    @apply badge bg-yellow-50 text-yellow-600 border border-yellow-100;
+  }
+  .badge-purple {
+    @apply badge bg-purple-50 text-purple-600 border border-purple-100;
+  }
+  .badge-gray {
+    @apply badge bg-gray-50 text-gray-500 border border-gray-100;
+  }
+
+  /* ── Nav link ── */
+  .nav-link {
+    @apply flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-semibold text-gray-500
+           hover:bg-green-50 hover:text-ganpat-green transition-all duration-200;
+  }
+  .nav-link.active {
+    @apply bg-gradient-to-r from-ganpat-green to-ganpat-green-mid text-white shadow-green-glow hover:shadow-lg hover:text-white;
+  }
+
+  /* ── Progress ── */
+  .progress {
+    @apply h-2.5 w-full rounded-full bg-green-50 border border-green-100 overflow-hidden;
+  }
+  .progress-bar {
+    @apply h-full rounded-full bg-gradient-to-r from-ganpat-green-light to-ganpat-green transition-all duration-700;
+  }
+
+  /* ── Table ── */
+  .th {
+    @apply py-4 px-6 text-left text-[11px] font-bold text-gray-400 uppercase tracking-widest;
+  }
+  .td {
+    @apply py-4 px-6 text-sm text-gray-600 border-b border-gray-50 group-hover:bg-green-50/30 transition-colors;
+  }
+}
+
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease both;
+}
+.animate-slide-up {
+  animation: slideUp 0.3s ease both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #f0fdf4;
+}
+::-webkit-scrollbar-thumb {
+  background: #16a34a;
+  border-radius: 99px;
+}
