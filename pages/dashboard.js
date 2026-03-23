@@ -5,21 +5,23 @@ import Head from "next/head";
 import { useAuth } from "./_app";
 import Layout from "../components/Layout";
 
-function StatCard({ icon, label, value, sub, color, href }) {
+function StatCard({ icon, label, value, sub, color, href, className = "" }) {
   const Wrap = href ? Link : "div";
   return (
     <Wrap
       href={href || "#"}
-      className={`card flex items-start justify-between gap-3 border-l-4 ${color} hover:cursor-pointer group`}
+      className={`card flex items-center justify-between gap-6 border-l-[6px] ${color} hover:cursor-pointer group shadow-premium hover:shadow-green-glow transition-all duration-300 ${className}`}
     >
-      <div>
-        <p className="text-xs text-gray-400 font-medium mb-0.5">{label}</p>
-        <p className="text-3xl font-bold font-heading text-gray-800">{value}</p>
-        {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
+      <div className="flex-1">
+        <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-2">{label}</p>
+        <div className="flex items-center gap-3">
+          <p className="text-4xl font-black font-heading text-gray-800 tracking-tight leading-none">{value}</p>
+          {sub && <p className="text-xs text-gray-400 font-bold max-w-[100px] leading-tight mt-1">{sub}</p>}
+        </div>
       </div>
-      <span className="text-3xl group-hover:scale-110 transition-transform">
+      <div className="w-16 h-16 rounded-[2rem] bg-gray-50/50 flex items-center justify-center text-3xl group-hover:scale-110 group-hover:bg-white transition-all duration-500 shadow-inner">
         {icon}
-      </span>
+      </div>
     </Wrap>
   );
 }
@@ -44,7 +46,20 @@ export default function Dashboard() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [user]);
+  }, [user, api]);
+
+  const getCourseProgress = (courseId) => {
+    const courseAssignments = assignments.filter(
+      (a) => a.course === courseId || a.course?._id === courseId
+    );
+    if (courseAssignments.length === 0) return 0;
+    const submitted = courseAssignments.filter((a) =>
+      a.submissions?.some(
+        (s) => s.student === user.id || s.student?._id === user.id
+      )
+    ).length;
+    return Math.round((submitted / courseAssignments.length) * 100);
+  };
 
   if (!user) return null;
 
@@ -59,18 +74,6 @@ export default function Dashboard() {
     );
     return !mine && new Date(a.dueDate) > new Date();
   });
-
-  const ungraded =
-    user.role === "faculty"
-      ? assignments.reduce((acc, a) => {
-          return (
-            acc +
-            (a.submissions?.filter(
-              (s) => s.status === "submitted" || s.status === "late",
-            ).length || 0)
-          );
-        }, 0)
-      : 0;
 
   return (
     <>
@@ -123,7 +126,7 @@ export default function Dashboard() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="flex flex-wrap gap-6">
             <StatCard
               icon="📚"
               label="Active Courses"
@@ -131,44 +134,44 @@ export default function Dashboard() {
               sub={
                 user.role === "faculty"
                   ? "Subjects you teach"
-                  : "Subjects enrolled"
+                  : "Subjects currently enrolled"
               }
               color="border-ganpat-green"
               href="/courses"
+              className="w-full md:w-auto md:min-w-[400px] bg-gradient-to-br from-white to-green-50/30"
             />
-            {user.role === "faculty" ? (
-              <StatCard
-                icon="📝"
-                label="To Be Graded"
-                value={loading ? "…" : ungraded}
-                sub="Submissions pending"
-                color="border-orange-400"
-                href="/assignments"
-              />
-            ) : (
-              <StatCard
-                icon="📝"
-                label="Pending Work"
-                value={loading ? "…" : unsubmitted.length}
-                sub="Assignments due"
-                color="border-orange-400"
-                href="/assignments"
-              />
-            )}
-            <StatCard
-              icon="📊"
-              label="Performance"
-              value="88%"
-              sub="Average Grade"
-              color="border-blue-500"
-            />
-            <StatCard
-              icon="🔔"
-              label="Notifications"
-              value="3"
-              sub="Recent updates"
-              color="border-purple-500"
-            />
+          </div>
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Link href="/courses" className="card p-6 flex flex-col sm:flex-row items-center gap-4 hover:bg-green-50/50 transition-all border-none bg-white/40 backdrop-blur-sm group">
+              <div className="w-12 h-12 flex-shrink-0 rounded-2xl bg-ganpat-green/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">📚</div>
+              <div className="text-center sm:text-left">
+                <p className="font-bold text-gray-800 text-sm">Browse Courses</p>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Explore Syllabus</p>
+              </div>
+            </Link>
+            <Link href="/assignments" className="card p-6 flex flex-col sm:flex-row items-center gap-4 hover:bg-orange-50/50 transition-all border-none bg-white/40 backdrop-blur-sm group">
+              <div className="w-12 h-12 flex-shrink-0 rounded-2xl bg-orange-400/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">📝</div>
+              <div className="text-center sm:text-left">
+                <p className="font-bold text-gray-800 text-sm">Assignments</p>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">View Deadlines</p>
+              </div>
+            </Link>
+            <Link href="/profile" className="card p-6 flex flex-col sm:flex-row items-center gap-4 hover:bg-blue-50/50 transition-all border-none bg-white/40 backdrop-blur-sm group">
+              <div className="w-12 h-12 flex-shrink-0 rounded-2xl bg-blue-500/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">⚙️</div>
+              <div className="text-center sm:text-left">
+                <p className="font-bold text-gray-800 text-sm">Settings</p>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Edit Profile</p>
+              </div>
+            </Link>
+            <Link href="mailto:support@ganpat.ac.in" className="card p-6 flex flex-col sm:flex-row items-center gap-4 hover:bg-purple-50/50 transition-all border-none bg-white/40 backdrop-blur-sm group">
+              <div className="w-12 h-12 flex-shrink-0 rounded-2xl bg-purple-500/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">📣</div>
+              <div className="text-center sm:text-left">
+                <p className="font-bold text-gray-800 text-sm">Support</p>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Contact Help</p>
+              </div>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -210,35 +213,55 @@ export default function Dashboard() {
                   </Link>
                 </div>
               ) : (
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {courses.slice(0, 4).map((c) => (
-                    <Link
-                      href={`/courses/${c._id}`}
-                      key={c._id}
-                      className="card p-6 flex flex-col justify-between group"
-                    >
-                      <div className="flex justify-between items-start mb-4">
-                        <div
-                          className="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-xs shadow-md group-hover:scale-110 transition-transform duration-300"
-                          style={{
-                            background:
-                              "linear-gradient(135deg,#14532d,#2EAD5C)",
-                          }}
-                        >
-                          {c.code?.slice(0, 2)}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {courses.slice(0, 4).map((c) => {
+                    const progress = getCourseProgress(c._id);
+                    return (
+                      <Link
+                        href={`/courses/${c._id}`}
+                        key={c._id}
+                        className="card p-8 flex flex-col justify-between group relative overflow-hidden transition-all duration-300 transform hover:-translate-y-2"
+                      >
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-ganpat-green/5 rounded-full -mr-12 -mt-12 transition-transform duration-500 group-hover:scale-150" />
+                        
+                        <div className="flex justify-between items-start mb-6 relative z-10">
+                          <div
+                            className="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-lg group-hover:rotate-6 transition-transform duration-300"
+                            style={{
+                              background:
+                                "linear-gradient(135deg,#14532d,#2EAD5C)",
+                            }}
+                          >
+                            {c.code?.slice(0, 2)}
+                          </div>
+                          <span className="badge-green ring-4 ring-green-50/50">Sem {c.semester}</span>
                         </div>
-                        <span className="badge-green">Sem {c.semester}</span>
-                      </div>
-                      <div>
-                        <p className="font-bold text-gray-800 leading-snug group-hover:text-ganpat-green transition-colors">
-                          {c.title}
-                        </p>
-                        <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-wider">
-                          {c.code} • {c.faculty?.name}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
+
+                        <div className="relative z-10">
+                          <h3 className="font-bold text-lg text-gray-800 leading-tight group-hover:text-ganpat-green transition-colors mb-2">
+                            {c.title}
+                          </h3>
+                          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-ganpat-green" />
+                            {c.code} • {c.faculty?.name}
+                          </p>
+                        </div>
+
+                        <div className="mt-8 relative z-10">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Course Progress</span>
+                            <span className="text-xs font-black text-ganpat-green">{progress}%</span>
+                          </div>
+                          <div className="progress h-2 bg-gray-100/80">
+                            <div 
+                              className="progress-bar shadow-sm" 
+                              style={{ width: `${progress}%` }} 
+                            />
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
             </div>
