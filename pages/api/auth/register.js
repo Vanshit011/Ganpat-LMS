@@ -1,6 +1,5 @@
 import { connectDB } from '../../../lib/db'
 import { signToken } from '../../../lib/auth'
-import { sendWelcomeEmail } from '../../../lib/email'
 import User from '../../../models/User'
 
 export default async function handler(req, res) {
@@ -25,9 +24,6 @@ export default async function handler(req, res) {
     department: department || 'Computer Science',
     semester: semester ? Number(semester) : undefined,
   })
-
-  // Send welcome email (non-blocking)
-  sendWelcomeEmail({ name: user.name, email: user.email, role: user.role, enrollmentId: user.enrollmentId }).catch(console.error)
 
   const token = signToken({ id: user._id, role: user.role })
 
